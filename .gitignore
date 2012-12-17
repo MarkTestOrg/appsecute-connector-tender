@@ -1,0 +1,32 @@
+#################
+## Node specific.
+#################
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+pids
+logs
+results
+node_modules
+node_modules/
+node_modules/**.**
+
+npm-debug.log
+
+#################
+## Jetbrains
+#################
+.idea
+.idea/
+.idea/**.**
+
+#################
+## Misc
+#################
+.DS_Store
