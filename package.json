@@ -1,0 +1,20 @@
+{
+    "name": "appsecute-connector-tender",
+    "description": "A connector for hooking Tender Support into Appsecute.",
+    "version":"0.0.1",
+    "private": false,
+    "main": "./server.js",
+    "dependencies": {
+        "express": "3.x",
+        "mongodb": "",
+        "mongoose": "",
+        "async": "",
+        "underscore": "",
+        "mocha": "",
+        "should": "",
+        "node-uuid": "",
+        "request": "",
+        "node-gravatar": "",
+        "appsecute-connector-api": "git://github.com/Appsecute/appsecute-connector-api-nodejs.git"
+    }
+}
