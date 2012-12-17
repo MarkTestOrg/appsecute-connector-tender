@@ -1,0 +1,1 @@
+[![Nodejitsu Deploy Status Badges](http://webhooks.jit.su/nodejitsu/handbook.png)](https://webops.jit.su#appsecute/appsecute-connector-github)
