@@ -1,12 +1,12 @@
 /**
- * A model representing a mapping between a GitHub repo and a system in Appsecute.
+ * A model representing a mapping between a Tender Support 'site' and a system in Appsecute.
  * @type {*}
  */
 
 var mongoose = require('mongoose');
 var database = require('../lib/database/database.js');
 
-var mappingSchema = new mongoose.Schema({
+var tenderMappingSchema = new mongoose.Schema({
 
     // The date and time the mapping was created.
     created:{
@@ -15,25 +15,25 @@ var mappingSchema = new mongoose.Schema({
         default:Date.now()
     },
 
-    // The 'full name' property of the GitHub repo.
+    // The name property of the Tender site.
     repo_full_name:{
         type:String,
         required:true
     },
 
-    // The id of the Appsecute system the repo is mapped to.
+    // The id of the Appsecute system the site is mapped to.
     system_id:{
         type:String,
         required:true
     },
 
-    // The id of the hook that this connector created in GitHub as a result of the mapping.
+    // The id of the Webhook that this connector created in Tender Support as a result of the mapping.
     hook_id:{
         type:String,
         required:true
     }
 });
 
-var mappingModel = database.model('Mapping', mappingSchema);
+var tenderMappingModel = database.model('TenderMapping', tenderMappingSchema);
 
-module.exports = mappingModel;
+module.exports = tenderMappingModel;

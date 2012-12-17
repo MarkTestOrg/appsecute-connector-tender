@@ -5,8 +5,7 @@
 
 var async = require('async');
 var _ = require('underscore');
-var gitHubApi = require('github');
-var repoMappingModel = require('../models/repomapping.js');
+var siteMappingModel = require('../models/sitemapping.js');
 
 
 module.exports = function (app) {
@@ -161,7 +160,7 @@ module.exports = function (app) {
 
                     console.log('GitHub hook installed for ' + full_name);
 
-                    var repoMapping = new repoMappingModel({
+                    var repoMapping = new siteMappingModel({
                         repo_full_name:full_name,
                         system_id:req.body.system_id,
                         hook_id:hook.id
@@ -187,7 +186,7 @@ module.exports = function (app) {
 
 
     /**
-     * Appsecute calls this when the user has unmapped a component from a systems timeline.
+     * Appsecute calls this when the user has unmapped a component from a system's timeline.
      */
     app.delete('/appsecute/components/:id/mappings/:systemid', function (req, res) {
 

@@ -1,5 +1,5 @@
 /**
- * GitHub Api Webservices.
+ * Web service Api calls for Tender Support to call.
  * @type {*}
  */
 
@@ -11,9 +11,9 @@ var appsecuteConnectorApi = require('appsecute-connector-api');
 module.exports = function (app) {
 
     /**
-     * Called by GitHub when a post receive hook is triggered.
+     * Called by Tender Support when a Tender Support Webhook is triggered to send us an event.
      */
-    app.post('/github/hooks/:owner_name/:repo_name', function (req, res) {
+    app.post('/tender/hooks/:owner_name', function (req, res) {
 
         var full_name = req.params.owner_name + '/' + req.params.repo_name;
         var content = '';

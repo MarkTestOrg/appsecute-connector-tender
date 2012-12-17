@@ -12,8 +12,8 @@ require('./config.js')(app, express);
 
 // Load our controllers
 require('./controllers/appsecute.js')(app);
-require('./controllers/github.js')(app);
+require('./controllers/tender.js')(app);
 
 module.exports = app.listen(port);
 
-console.log("GitHub connector listening on port %d", port);
+console.log("Tender Support connector listening on port %d", port);
