@@ -15,6 +15,9 @@
         "node-uuid": "",
         "request": "",
         "node-gravatar": "",
+        "oauth2orize": "0.x.x",
+        "passport": "~0.1.12",
+        "passport-oauth2-client-password": "0.1.x",
         "appsecute-connector-api": "git://github.com/Appsecute/appsecute-connector-api-nodejs.git"
     }
 }
