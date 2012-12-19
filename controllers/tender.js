@@ -29,21 +29,30 @@ module.exports = function (app) {
         // Publish the event to Appsecute
         appsecuteConnectorApi.publish(
             process.env.APPSECUTE_SECRET,
-            full_name,
+            encodeURIComponent(full_name),
+            event_id,
             'Code pushed to ' + full_name,
             content,
             [req.body.name, req.body.ref, 'commit', 'source'],
             'info',
             function () {
-                res.end(200, {});
+                res.send(200, {});
                 console.log('Event successfully processed for ' + full_name);
             },
-            function (err, body) {
-                res.end(200, {});
+            function (err, resp) {
+                res.send(200, {});
                 console.log('Event processing failed for ' + full_name);
                 console.log('Error was: ' + err ? JSON.stringify(err) : err);
+                console.log('Response was: ' + resp.body ? JSON.stringify(resp.body) : resp.body);
                 // TODO This could dump the event in to the database and try resend it to Appsecute later
+            },
+            function (body) {
+                res.send(200, {});
+                console.log('Event processing not required for ' + full_name + '. Pre-flight check indicated component is no longer mapped to any systems within Appsecute.');
+                console.log('Appsecute responded with ' + body ? JSON.stringify(body) : body);
+                // TODO Delete the mapping and webhook within GitHub
             }
         );
+
     });
 };

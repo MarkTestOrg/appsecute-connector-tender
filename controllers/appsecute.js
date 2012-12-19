@@ -117,15 +117,14 @@ module.exports = function (app) {
 
 
     /**
-     * Appsecute calls this when the user has mapped a component to a systems timeline.
+     * Appsecute calls this when the user maps a component
      */
     app.post('/appsecute/components/:id/mappings', function (req, res) {
 
         // TODO Need to respond with 401 if token is bad
 
-        // This connector sits in between Appsecute and GitHub. When a GitHub repo is mapped to a system in Appsecute
-        // we create a web hook in GitHub so that when some activity occurs on the repo the connector will be notified.
-        // The connector can then push the activity to the system timeline in Appsecute.
+        // Create a web hook in GitHub so that when some activity occurs on the repo the connector will be notified.
+        // The connector can then push the activity to Appsecute.
 
         // We're using the repo 'full name' as the unique id of the repo
         var full_name = decodeURIComponent(req.params.id);
@@ -133,52 +132,64 @@ module.exports = function (app) {
         var owner_name = split[0];
         var repo_name = split[1];
 
-        var github = new gitHubApi({
-            version:'3.0.0'
-        });
+        // Make sure we haven't set up a mapping for this before
+        repoMappingModel.find(
+            {repo_full_name:full_name},
+            function (err, mapping) {
+                if (!mapping) {
 
-        github.authenticate({
-            type:'oauth',
-            token:req.query.access_token
-        });
-
-        github.repos.createHook(
-            {
-                user:owner_name,
-                repo:repo_name,
-                name:'web',
-                events:['push'],
-                active:true,
-                config:{
-                    "url":getServerUrl(req) + '/github/hooks/' + owner_name + '/' + repo_name,
-                    "content_type":'json',
-                    "secret":process.env.APPSECUTE_SECRET
-                }
-            },
-            function (err, hook) {
-                if (!err) {
-
-                    console.log('GitHub hook installed for ' + full_name);
-
-                    var repoMapping = new siteMappingModel({
-                        repo_full_name:full_name,
-                        system_id:req.body.system_id,
-                        hook_id:hook.id
+                    // We haven't previously installed a webhook so lets do it
+                    var github = new gitHubApi({
+                        version:'3.0.0'
                     });
 
-                    repoMapping.save(function (err) {
-                        if (!err) {
-                            res.send(200);
-                            console.log('Mapping saved for ' + full_name);
-                        } else {
-                            // TODO Delete the hook
-                            console.log('Failed to save mapping for ' + full_name);
-                            res.send(400, err);
+                    github.authenticate({
+                        type:'oauth',
+                        token:req.query.access_token
+                    });
+
+                    github.repos.createHook(
+                        {
+                            user:owner_name,
+                            repo:repo_name,
+                            name:'web',
+                            events:['push'],
+                            active:true,
+                            config:{
+                                "url":getServerUrl(req) + '/github/hooks/' + owner_name + '/' + repo_name + '?secret=' + process.env.APPSECUTE_SECRET, // TODO This needs to be in a header
+                                "content_type":'json'
+                            }
+                        },
+                        function (err, hook) {
+                            if (!err) {
+
+                                console.log('GitHub hook installed for ' + full_name);
+
+                                var repoMapping = new repoMappingModel({
+                                    repo_full_name:full_name,
+                                    hook_id:hook.id
+                                });
+
+                                repoMapping.save(function (err) {
+                                    if (!err) {
+                                        res.send(200);
+                                        console.log('Mapping saved for ' + full_name);
+                                    } else {
+                                        // TODO Delete the hook
+                                        console.log('Failed to save mapping for ' + full_name);
+                                        res.send(400, err);
+                                    }
+                                });
+                            } else {
+                                res.send(400, err);
+                                console.log('Failed to install GitHub hook for ' + full_name);
+                            }
                         }
-                    });
+                    );
                 } else {
-                    res.send(400, err);
-                    console.log('Failed to install GitHub hook for ' + full_name);
+                    // Nothing to do, we already have a webhook installed on the repo
+                    // TODO We could double check the hook still exists and that a user hasn't manually removed it from within GitHub
+                    res.send(200, {});
                 }
             }
         );
@@ -186,9 +197,9 @@ module.exports = function (app) {
 
 
     /**
-     * Appsecute calls this when the user has unmapped a component from a system's timeline.
+     * Appsecute calls this when the user unmaps a component
      */
-    app.delete('/appsecute/components/:id/mappings/:systemid', function (req, res) {
+    app.delete('/appsecute/components/:id/mappings', function (req, res) {
 
         // TODO Need to respond with 401 if token is bad
         // TODO Delete hook
