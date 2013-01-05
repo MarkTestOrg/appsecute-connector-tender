@@ -4,6 +4,13 @@
 
 var url = require('url');
 
+// Use passport for authentication
+var passport = require('passport');
+
+// Set up authentication using passport
+require('./auth');
+
+
 module.exports = function (app, express) {
 
     // General configuration, called regardless of environment
@@ -15,6 +22,17 @@ module.exports = function (app, express) {
         app.use(express.logger());
         app.use(express.bodyParser());
         app.use(express.cookieParser());
+
+        // Use sessions from express
+        app.use(express.session({ secret: 'keyboard cat' }));
+
+        // Use 'ejs' as the renderer for web pages
+        app.set('view engine', 'ejs');
+
+        // Set up passport for authentication
+        app.use(passport.initialize());
+        app.use(passport.session());
+        app.use(app.router);
 
         // Make sure it is in fact Appsecute calling the api
         app.all('*', function (req, res, next) {

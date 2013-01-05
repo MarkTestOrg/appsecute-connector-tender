@@ -7,18 +7,14 @@ var express = require('express');
 var app = express();
 var port = 3002;
 
-// Set up passport for authentication
-var passport = require('passport');
-
 // Set up an OAuth2 Server
-var oauth2orize = require('')
-    , oauth2 = require('./lib/oauth/oauth2')
-var oAuthServer = oauth2orize.createServer();
+var oauth2 = require('./lib/oauth/oauth2');
 
 // Configure the environment
 require('./config.js')(app, express);
 
 // Load our controllers
+require('./controllers/oauthsite.js')(app, oauth2);
 require('./controllers/appsecute.js')(app);
 require('./controllers/tender.js')(app);
 
