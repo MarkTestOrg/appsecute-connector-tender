@@ -23,8 +23,11 @@ module.exports = function (app, express) {
         app.use(express.bodyParser());
         app.use(express.cookieParser());
 
-        // Use sessions from express
-        app.use(express.session({ secret: 'keyboard cat' }));
+        // Use sessions from express, with an explicit cookie name (key) to avoid conflicts
+        app.use(express.session({
+            key:'appsecute-tender-con-sid',
+            secret:'5RE@#pf54e2r!'
+        }));
 
         // Use 'ejs' as the renderer for web pages
         app.set('view engine', 'ejs');
