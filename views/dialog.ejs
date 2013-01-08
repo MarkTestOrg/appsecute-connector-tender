@@ -5,9 +5,9 @@
 <form action="/oauth/authorize/decision" method="post">
   <input name="transaction_id" type="hidden" value="<%= transactionID %>">
   <div>
-  API token: <input type="text" value="<% apiToken %>" id="apitoken">
+  Tender API Key: <input name="apikey" type="text" value="<%= apikey %>">
   <br>
-  <input type="submit" value="Allow" id="allow">
-  <input type="submit" value="Deny" name="cancel" id="deny">
+  <input name="allow" type="submit" value="Allow" id="allow">
+  <input name="cancel" type="submit" value="Deny" id="deny">
   </div>
 </form>
