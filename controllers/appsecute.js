@@ -3,9 +3,9 @@
  * @type {*}
  */
 
-var async = require('async');
 var _ = require('underscore');
 var siteMappingModel = require('../models/sitemapping.js');
+var passport = require('passport');
 
 
 module.exports = function (app) {
@@ -35,85 +35,30 @@ module.exports = function (app) {
     /**
      * Appsecute calls this to get a listing of components for the current user.
      */
-    app.get('/appsecute/components', function (req, res) {
+    app.get('/appsecute/components',
+        passport.authenticate('bearer', { session: false }),
 
-        // TODO Need to respond with 401 if token is bad
+        function (req, res) {
+            var username = req.user.username;
 
-        var github = new gitHubApi({
-            version:'3.0.0'
-        });
-
-        github.authenticate({
-            type:'oauth',
-            token:req.query.access_token
-        });
-
-        // Need to get all repos from the users personal account and all orgs they have access to
-        async.parallel({
-                user_repos:function (callback) {
-                    github.user.get({}, function (err, user) {
-                        if (!err) {
-                            github.repos.getAll({}, function (err, repos) {
-                                callback(err, {owner:user.login, repos:repos});
-                            });
-                        } else {
-                            callback(err);
+            res.send(
+                {
+                    'Tender Components':
+                    [
+                        {
+                            name: "Test response for user " + username,
+                            id: 'test1',
+                            description: 'This is a test description'
+                        },
+                        {
+                            name: "A second item",
+                            id: 'test2',
+                            description: 'This is a second test description'
                         }
-                    });
-                },
-                org_repos:function (callback) {
-                    github.user.getOrgs({}, function (err, orgs) {
-                        if (!err) {
-
-                            var result = [];
-
-                            _.each(orgs, function (org) {
-
-                                github.repos.getFromOrg(
-                                    {org:org.login},
-                                    function (err, repos) {
-                                        result.push({owner:org.login, repos:repos});
-
-                                        if (result.length >= orgs.length) {
-                                            callback(err, result);
-                                        }
-                                    }
-                                );
-                            });
-                        } else {
-                            callback(err);
-                        }
-                    });
-                }
-            },
-            function (err, result) {
-                if (err) {
-                    res.send(400, err)
-                } else {
-
-                    var components = {};
-
-                    if (result.user_repos) {
-                        components[result.user_repos.owner] = [];
-                        _.each(result.user_repos.repos, function (repo) {
-                            components[result.user_repos.owner].push(componentFromRepo(repo));
-                        });
-                    }
-
-                    if (result.org_repos) {
-                        _.each(result.org_repos, function (org) {
-                            components[org.owner] = [];
-                            _.each(org.repos, function (repo) {
-                                components[org.owner].push(componentFromRepo(repo));
-                            });
-                        });
-                    }
-
-                    res.send(components);
-                }
-            }
-        );
-    });
+                    ]
+            });
+        }
+    );
 
 
     /**
