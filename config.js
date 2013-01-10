@@ -38,6 +38,7 @@ module.exports = function (app, express) {
         app.use(app.router);
 
         // Make sure it is in fact Appsecute calling the api
+        // TODO: This should not apply to interactive stuff
         app.all('*', function (req, res, next) {
 
             if (!process.env.APPSECUTE_SECRET) {
@@ -48,7 +49,7 @@ module.exports = function (app, express) {
                     req.query.secret === process.env.APPSECUTE_SECRET) {
                     next();
                 } else {
-                    res.send(503);
+                    res.send(403); // Forbidden (access denied)
                 }
             }
         });
