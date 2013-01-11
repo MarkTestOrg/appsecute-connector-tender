@@ -30,7 +30,7 @@ module.exports = function (app, express) {
             console.warn('No secret has been set. Connector is running insecurely and not validating secrets. Don\'t run this in production.');
         }
 
-        // Use sessions from express, with an explicit cookie name (key) to avoid conflicts
+        // Use sessions from express, with an explicit cookie name (key) to avoid conflicts.
         app.use(express.session({
             key:'appsecute-tender-con-sid',
             secret:'5RE@#pf54e2r!'
