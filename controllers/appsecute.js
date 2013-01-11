@@ -29,7 +29,7 @@ module.exports = function (app) {
 
         return {
             name:category.name,
-            id:category.permalink, // this is the 'sanitised name' from tender
+            id:componentId, // this is the 'sanitised name' from tender
             description:category.summary
         }
     };
