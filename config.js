@@ -17,7 +17,7 @@ module.exports = function (app, express) {
     //noinspection JSValidateTypes
     app.configure(function () {
 
-        // Configure express to use body parser and built-in sessions (backed by MongoDB for persistence)
+        // We configure express to use body parser and built-in sessions (backed by MongoDB for persistence)
         app.use(express.compress());
         app.use(express.logger());
         app.use(express.bodyParser());
