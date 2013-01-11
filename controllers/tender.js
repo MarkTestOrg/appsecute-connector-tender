@@ -180,7 +180,8 @@ module.exports = function (app) {
         var event_id = req.params.tender_site + '-' + category + "-" + req.body.number;
 
         // Format the comment using markdown
-        var content = '![Alt ' + req.body.author_name + '](' + gravatar.get(req.body.author_email, {}, true) + ')' +
+        var event_name = 'Tender support site ' + componentId;
+        var event_content = '![Alt ' + req.body.author_name + '](' + gravatar.get(req.body.author_email, {}, true) + ')' +
             '> ' + req.body.body;
 
         // Publish the event to Appsecute
@@ -188,8 +189,8 @@ module.exports = function (app) {
             process.env.APPSECUTE_SECRET,
             encodeURIComponent(componentId),
             event_id,
-            'Comment added to tender support site ' + componentId,
-            content,
+            event_name,
+            event_content,
             [req.body.name, req.body.ref, 'commit', 'source'],
             'info',
             function () {
