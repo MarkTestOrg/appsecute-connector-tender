@@ -23,6 +23,13 @@ module.exports = function (app, express) {
         app.use(express.bodyParser());
         app.use(express.cookieParser());
 
+        if (process.env.APPSECUTE_SECRET) {
+            console.info('Secret has been set. Connector is running securely and ready for production. (' +
+                process.env.APPSECUTE_SECRET.substring(0, 4) + "...)");
+        } else {
+            console.warn('No secret has been set. Connector is running insecurely and not validating secrets. Don\'t run this in production.');
+        }
+
         // Use sessions from express, with an explicit cookie name (key) to avoid conflicts
         app.use(express.session({
             key:'appsecute-tender-con-sid',
