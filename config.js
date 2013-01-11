@@ -38,19 +38,30 @@ module.exports = function (app, express) {
         app.use(app.router);
 
         // Make sure it is in fact Appsecute calling the api
-        // TODO: This should not apply to interactive stuff
         app.all('*', function (req, res, next) {
+            var path = url.parse(req.url).pathname;
 
-            if (!process.env.APPSECUTE_SECRET) {
-                console.warn('No secret has been set. Connector is running insecurely and not validating secrets. Don\'t run this in production.');
-                next();
-            } else {
-                if (req.query.secret &&
-                    req.query.secret === process.env.APPSECUTE_SECRET) {
+            // Don't check Appsecute secret during OAuth interaction
+            if (path !== '/oauth/authorize' && // OAuth 'grant access' URL
+                path !== '/oauth/authorize/decision' && // Post back from form granting access
+                path !== '/oauth/token' && // OAuth call to exchange authorization code for access token
+                path !== '/login' && // Interactive user authentication
+                path !== '/logout' && // Interactive user authentication
+                path !== '/oauth' // Interactive page
+                ) {
+                if (!process.env.APPSECUTE_SECRET) {
+                    console.warn('No secret has been set. Connector is running insecurely and not validating secrets. Don\'t run this in production.');
                     next();
                 } else {
-                    res.send(403); // Forbidden (access denied)
+                    if (req.query.secret &&
+                        req.query.secret === process.env.APPSECUTE_SECRET) {
+                        next();
+                    } else {
+                        res.send(403); // Forbidden (access denied)
+                    }
                 }
+            } else {
+                next();
             }
         });
 
