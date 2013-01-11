@@ -200,7 +200,9 @@ module.exports = function (app) {
                 res.send(200, {});
                 console.log('Event processing failed for ' + componentId);
                 console.log('Error was: ' + err ? JSON.stringify(err) : err);
-                console.log('Response was: ' + resp.body ? JSON.stringify(resp.body) : resp.body);
+                if( resp && resp.body ) {
+                    console.log('Response was: ' + resp.body ? JSON.stringify(resp.body) : resp.body);
+                }
                 // TODO This could dump the event in to the database and try resend it to Appsecute later
             },
             function (body) {
