@@ -19,7 +19,7 @@ var appsecuteConnectorApi = require('appsecute-connector-api');
  *
  * This strategy is used to authenticate users based on a username and password.
  * Anytime a request is made to authorize an application, we must ensure that
- * a user is logged in before asking them to approve the request.
+ * a user is logged in before asking them to approve the request
  */
 passport.use(new LocalStrategy(
   function(username, password, done) {
