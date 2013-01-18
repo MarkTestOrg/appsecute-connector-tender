@@ -6,8 +6,9 @@
 var _ = require('underscore');
 var siteMappingModel = require('../models/sitemapping.js');
 var passport = require('passport');
-var tenderClient = require('../lib/tender/tenderclient.js');
+var login = require('connect-ensure-login');
 
+var tenderClient = require('../lib/tender/tenderclient.js');
 
 module.exports = function (app) {
 
@@ -36,13 +37,77 @@ module.exports = function (app) {
 
 
     /**
+     * Hook for Appsecute to redirect to after OAuth authentication; this implementation allows the
+     * user to enter their Tender API key.
+     */
+    app.get('/appsecute/after-auth',
+        // Make sure the user is logged in, using OAuth through Appsecute
+        // Redirect back to here after a successful login
+        login.ensureLoggedIn('/auth/appsecute' /*+ '?redirect=' + encodeURIComponent('/appsecute/after-auth')*/),
+
+        function (req, res, next) {
+            // Save the appsecute return URL in our session
+            if( req.query.back_to_appsecute && req.session ) {
+                var back_to_appsecute_url = decodeURIComponent(req.query.back_to_appsecute);
+                req.session.back_to_appsecute = back_to_appsecute_url;
+            }
+
+            // Grab the user ID provided in the URL
+            userFromUrl = req.query.user;
+            if(!userFromUrl) {
+//                res.send(400, 'No user ID specified');
+//                return;
+            }
+
+//            var existingApiKey = req.user.apikey ? req.user.apikey : '';
+            var existingApiKey = '(no existing API key)';
+            var username = req.user.name;
+            var transactionId = "no transaction ID";
+
+            res.render(
+                'apikey',
+                {
+                    transactionID: transactionId,
+                    username: username,
+                    apikey: existingApiKey
+                });
+        }
+    );
+
+
+    app.post('/appsecute/after-auth/result',
+        // Make sure the user is logged in, using OAuth through Appsecute
+        login.ensureLoggedIn('/auth/appsecute' + '?redirect=' + encodeURIComponent('/appsecute/after-auth/result')),
+
+        function (req, res, next) {
+            // Extract the API key from the posted form data
+            var apiKey = req.body.apikey;
+            if(apiKey) {
+                req.user.apikey = apiKey;
+
+                if( req.session && req.session.back_to_appsecute) {
+                    // Redirect back to Appsecute
+                    return res.redirect(req.session.back_to_appsecute);
+                }
+                else {
+                    return res.send("Recorded API key " + req.user.apikey);
+                }
+            }
+            else {
+                return next(new Error("No API key supplied"));
+            }
+        }
+    );
+
+
+    /**
      * Appsecute calls this to get a listing of components for the current user.
      */
     app.get('/appsecute/components',
         passport.authenticate('bearer', { session:false }),
 
         function (req, res, next) {
-            var username = req.user.username;
+            var username = req.user.id;
 
             // The API key is associated with the user who authenticated when Appsecute was issued an OAuth access token
             // When Appsecute's token is redeemed passport looks up the original user as the content to run under

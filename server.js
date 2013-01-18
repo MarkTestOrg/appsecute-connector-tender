@@ -17,6 +17,7 @@ require('./config.js')(app, express);
 require('./controllers/oauthsite.js')(app, oauth2);
 require('./controllers/appsecute.js')(app);
 require('./controllers/tender.js')(app);
+require('./controllers/oauth2-client.js')(app);
 
 module.exports = app.listen(port);
 

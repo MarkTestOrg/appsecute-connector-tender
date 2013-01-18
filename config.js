@@ -54,7 +54,11 @@ module.exports = function (app, express) {
                 path !== '/oauth/token' && // OAuth call to exchange authorization code for access token
                 path !== '/login' && // Interactive user authentication
                 path !== '/logout' && // Interactive user authentication
-                path !== '/oauth' // Interactive page
+                path !== '/oauth' && // Interactive page
+                path !== '/appsecute/after-auth' && // After authorization (effectively a login)
+                path !== '/appsecute/after-auth/result' && // After authorization, posted form
+                path !== '/auth/appsecute' && // Appsecute OAuth login screen
+                path !== '/auth/appsecute/callback' // Appsecute OAuth login callback
                 ) {
                 if (!process.env.APPSECUTE_SECRET) {
                     console.warn('No secret has been set. Connector is running insecurely and not validating secrets. Don\'t run this in production.');
