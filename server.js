@@ -26,7 +26,7 @@ console.log("Tender Support connector listening on port %d", port);
 
 
 
-// Register ejs as .html. If we did
+// Register ejs as .ejs. If we did
 // not call this, we would need to
 // name our views foo.ejs instead
 // of foo.html. The __express method
@@ -36,7 +36,7 @@ console.log("Tender Support connector listening on port %d", port);
 // to change "foo.ejs" to "foo.html"
 // we simply pass _any_ function, in this
 // case `ejs.__express`.
-app.engine('.html', require('ejs').__express);
+app.engine('.ejs', require('ejs').__express);
 
 // Optional since express defaults to CWD/views
 app.set('views', __dirname + '/views');
@@ -44,7 +44,7 @@ app.set('views', __dirname + '/views');
 // Without this you would need to
 // supply the extension to res.render()
 // ex: res.render('users.html').
-app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 
 // Dummy users
 var users = [
