@@ -1,7 +1,7 @@
 {
     "name": "appsecute-connector-tender",
     "description": "A connector for hooking Tender Support into Appsecute.",
-    "version": "0.0.1",
+    "version": "0.0.1-14",
     "private": false,
     "main": "./server.js",
     "dependencies": {

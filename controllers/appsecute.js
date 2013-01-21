@@ -61,16 +61,25 @@ module.exports = function (app) {
 
 //            var existingApiKey = req.user.apikey ? req.user.apikey : '';
             var existingApiKey = '(no existing API key)';
+//            var authenticatedUsername = req.user.name;
             var username = req.user.name;
             var transactionId = "no transaction ID";
+
+            // Logging
+            if( req.user ) {
+                console.log("User name: " + (req.user ? req.user.name : "(no name attribute)"));
+            }
+            else {
+                console.log("User request is null");
+            }
 
             console.log("About to render apikey out of " + app.get('views'));
             res.render(
                 'apikey',
                 {
                     transactionID: transactionId,
-//                    username: username,
-                    username: 'test user name',
+//                    username: authenticatedUsername,
+                    username: username,
                     apikey: existingApiKey
                 });
 
