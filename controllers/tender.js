@@ -7,8 +7,65 @@ var gravatar = require('node-gravatar');
 var appsecuteConnectorApi = require('appsecute-connector-api');
 
 module.exports = function (app) {
+    /**
+     * Called by Tender Support when a Tender Support Webhook is triggered to send us an event.
+     */
+    app.post('/tender/hooks/:tender_site', function (req, res) {
+        // Extract category from posted data and use to construct our component ID
+        var category = "all";
+        if(req.body.category && req.body.category.permalink) {
+            category = req.body.category.permalink;
+        }
+        var componentId = req.params.tender_site + '/' + category;
+
+        console.log('Processing event from Tender Support for ' + componentId);
+
+        // We get a call for each comment posted
+        var event_id = req.params.tender_site + '-' + category + "-" + req.body.number;
+
+        // Format the comment using markdown
+        var event_name = 'Tender support site ' + componentId;
+        var event_content = '![Alt ' + req.body.author_name + '](' + gravatar.get(req.body.author_email, {}, true) + ')' +
+            '> ' + req.body.body;
+
+        // Publish the event to Appsecute
+        appsecuteConnectorApi.publish(
+            process.env.APPSECUTE_SECRET,
+            encodeURIComponent(componentId),
+            event_id,
+            event_name,
+            event_content,
+            [req.body.name, req.body.ref, 'commit', 'source'],
+            'info',
+            function () {
+                res.send(200, {});
+                console.log('Event successfully processed for ' + componentId);
+            },
+            function (err, resp) {
+                res.send(200, {});
+                console.log('Event processing failed for ' + componentId);
+                console.log('Error was: ' + err ? JSON.stringify(err) : err);
+                if( resp && resp.body ) {
+                    console.log('Response was: ' + resp.body ? JSON.stringify(resp.body) : resp.body);
+                }
+                // TODO This could dump the event in to the database and try resend it to Appsecute later
+            },
+            function (body) {
+                res.send(200, {});
+                console.log('Event processing not required for ' + componentId + '. Pre-flight check indicated component is no longer mapped to any systems within Appsecute.');
+                console.log('Appsecute responded with ' + body ? JSON.stringify(body) : body);
+                // TODO: Indicate to people that they can remove the Webhook? If we can send a message back
+            }
+        );
+    });
 
 
+    /**
+     * This is some sample data showing what will be posted. Not used by the program, just here
+     * for informational purposes.
+     * Sections of this data are incomplete and have had some data replaced with // ...
+     * See samplePostDataCommentOnDiscussion for a complete data set.
+     */
     var samplePostDataNewDiscussion =
     {
         "assets": [],
@@ -51,6 +108,10 @@ module.exports = function (app) {
     };
 
 
+    /**
+     * This is some sample data showing what will be posted. Not used by the program, just here
+     * for informational purposes.
+     */
     var samplePostDataCommentOnDiscussion =
     {
         "assets":[],
@@ -162,56 +223,4 @@ module.exports = function (app) {
         "user_is_supporter":true,
         "via":"web"
     };
-
-    /**
-     * Called by Tender Support when a Tender Support Webhook is triggered to send us an event.
-     */
-    app.post('/tender/hooks/:tender_site', function (req, res) {
-        // Extract category from posted data and use to construct our component ID
-        var category = "all";
-        if(req.body.category && req.body.category.permalink) {
-            category = req.body.category.permalink;
-        }
-        var componentId = req.params.tender_site + '/' + category;
-
-        console.log('Processing event from Tender Support for ' + componentId);
-
-        // We get a call for each comment posted
-        var event_id = req.params.tender_site + '-' + category + "-" + req.body.number;
-
-        // Format the comment using markdown
-        var event_name = 'Tender support site ' + componentId;
-        var event_content = '![Alt ' + req.body.author_name + '](' + gravatar.get(req.body.author_email, {}, true) + ')' +
-            '> ' + req.body.body;
-
-        // Publish the event to Appsecute
-        appsecuteConnectorApi.publish(
-            process.env.APPSECUTE_SECRET,
-            encodeURIComponent(componentId),
-            event_id,
-            event_name,
-            event_content,
-            [req.body.name, req.body.ref, 'commit', 'source'],
-            'info',
-            function () {
-                res.send(200, {});
-                console.log('Event successfully processed for ' + componentId);
-            },
-            function (err, resp) {
-                res.send(200, {});
-                console.log('Event processing failed for ' + componentId);
-                console.log('Error was: ' + err ? JSON.stringify(err) : err);
-                if( resp && resp.body ) {
-                    console.log('Response was: ' + resp.body ? JSON.stringify(resp.body) : resp.body);
-                }
-                // TODO This could dump the event in to the database and try resend it to Appsecute later
-            },
-            function (body) {
-                res.send(200, {});
-                console.log('Event processing not required for ' + componentId + '. Pre-flight check indicated component is no longer mapped to any systems within Appsecute.');
-                console.log('Appsecute responded with ' + body ? JSON.stringify(body) : body);
-                // TODO: Indicate to people that they can remove the Webhook? If we can send a message back
-            }
-        );
-    });
 };
