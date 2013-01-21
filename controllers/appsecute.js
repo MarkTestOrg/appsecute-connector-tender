@@ -64,14 +64,28 @@ module.exports = function (app) {
             var username = req.user.name;
             var transactionId = "no transaction ID";
 
-            console.log("About to render apikey out of " + app.get('views'));
-            res.render(
-                'apikey',
-                {
-                    transactionID: transactionId,
-                    username: username,
-                    apikey: existingApiKey
-                });
+//            console.log("About to render apikey out of " + app.get('views'));
+//            res.render(
+//                'apikey',
+//                {
+//                    transactionID: transactionId,
+//                    username: username,
+//                    apikey: existingApiKey
+//                });
+
+            // Dummy users
+            var users = [
+                { name: 'tobi', email: 'tobi@learnboost.com' },
+                { name: 'loki', email: 'loki@learnboost.com' },
+                { name: 'jane', email: 'jane@learnboost.com' }
+            ];
+
+            console.log("About to render test out of " + app.get('views'));
+            res.render('test', {
+                users: users,
+                title: "EJS example",
+                header: "Some users"
+            });
         }
     );
 

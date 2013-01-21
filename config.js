@@ -45,7 +45,6 @@ module.exports = function (app, express) {
 //        app.set('views', __dirname + '/views');
 //        app.set('view engine', 'ejs');
 
-
         // Set up passport for authentication
         app.use(passport.initialize());
         app.use(passport.session());
