@@ -64,7 +64,7 @@ module.exports = function (app) {
             var username = req.user.name;
             var transactionId = "no transaction ID";
 
-            console.log("About to render API key out of " + app.get('views'));
+            console.log("About to render apikey out of " + app.get('views'));
             res.render(
                 'apikey',
                 {

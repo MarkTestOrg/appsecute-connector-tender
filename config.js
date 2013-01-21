@@ -37,9 +37,9 @@ module.exports = function (app, express) {
         }));
 
         // Use 'ejs' as the renderer for web pages
-        app.set('view engine', 'ejs');
-        app.set('views', __dirname + '/views');  // __dirname gives the dir the *current script* is running in
-        console.log("Setting views to " +  __dirname + '/views');
+//        app.set('view engine', 'ejs');
+//        app.set('views', __dirname + '/views');  // __dirname gives the dir the *current script* is running in
+//        console.log("Setting views to " +  __dirname + '/views');
 
         // Set up passport for authentication
         app.use(passport.initialize());
@@ -54,6 +54,7 @@ module.exports = function (app, express) {
             if (path !== '/oauth/authorize' && // OAuth 'grant access' URL
                 path !== '/oauth/authorize/decision' && // Post back from form granting access
                 path !== '/oauth/token' && // OAuth call to exchange authorization code for access token
+                path !== '/' && // Test page
                 path !== '/login' && // Interactive user authentication
                 path !== '/logout' && // Interactive user authentication
                 path !== '/oauth' && // Interactive page
