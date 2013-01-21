@@ -38,7 +38,8 @@ module.exports = function (app, express) {
 
         // Use 'ejs' as the renderer for web pages
         app.set('view engine', 'ejs');
-        app.set('views', __dirname + '/views');
+        app.set('views', __dirname + '/views');  // __dirname gives the dir the *current script* is running in
+        console.log("Setting views to " +  __dirname + '/views');
 
         // Set up passport for authentication
         app.use(passport.initialize());
