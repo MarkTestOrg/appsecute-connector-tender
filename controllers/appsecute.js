@@ -131,9 +131,13 @@ module.exports = function (app) {
             var tenderSite = 'appsecute';
 
             if (apikey) {
+                console.log("Listing categories from Tender");
+
                 // Use the API key to go get a list of components from Tender support
                 tenderClient.listCategories(tenderSite, apikey, function (err, categories) {
                     if (!err) {
+                        console.log("Successfully listed categories from Tender");
+
                         var components = {};
 
                         // TODO: Support multiple tender sites
@@ -146,6 +150,8 @@ module.exports = function (app) {
                         res.send(components);
                     }
                     else {
+                        console.log("Error listing categories from Tender: " + err.message);
+
                         next(err); // Error listing categories from Tender
                     }
                 });
@@ -153,6 +159,7 @@ module.exports = function (app) {
             else {
                 // We don't have an API key associated with Appsecute's OAuth access token
                 // Send a 401 to tell Appsecute to re-do OAuth authentication
+                console.log("API key not available for user " + req.user.id + ", username " + req.user.username);
                 res.send(401, "API key not available");
             }
         }
