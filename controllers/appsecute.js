@@ -59,20 +59,10 @@ module.exports = function (app) {
 //                return;
             }
 
-//            var existingApiKey = req.user.apikey ? req.user.apikey : '';
-            var existingApiKey = '(no existing API key)';
+            var existingApiKey = req.user.apikey ? req.user.apikey : '';
             var authenticatedUsername = req.user.name;
             var transactionId = "no transaction ID";
 
-            // Logging
-            if( req.user ) {
-                console.log("User name: " + (req.user ? req.user.name : "(no name attribute)"));
-            }
-            else {
-                console.log("User request is null");
-            }
-
-            console.log("About to render credentials page out of " + app.get('views'));
             res.render(
                 'credentials',
                 {

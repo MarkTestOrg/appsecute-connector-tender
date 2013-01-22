@@ -61,22 +61,28 @@ passport.use(new BearerStrategy(function(accessToken, done) {
     db.accessTokens.find(accessToken, function(err, token) {
         if (err) { return done(err); }
         if (token) {
-          // Token already known about so look up user (who must already exist)
-          db.users.find(token.userID, function(err, user) {
-              if (err) { return done(err); }
-              if (!user) { return done(null, false); }
+            console.log("Found access token in cache: " + accessToken.slice(0, 4) + "...");
 
-              var info = { scope: '*' } // TODO: Add scope from token
-              done(null, user, info);
-          });
+            // Token already known about so look up user (who must already exist)
+            db.users.find(token.userID, function(err, user) {
+                if (err) { return done(err); }
+                if (!user) { return done(null, false); }
+
+                var info = { scope: '*' } // TODO: Add scope from token
+                done(null, user, info);
+            });
         }
         else {
+            console.log("Access token not in cache: " + accessToken.slice(0, 4) + "... checking token with Appsecute");
+
             // Token not found in store; go ask Appsecute
             appsecuteConnectorApi.getOAuthTokenInfo(
                 process.env.APPSECUTE_SECRET,
                 accessToken,
                 function(tokenInfo) {
-                  // Got information about token; add it to our in-memory store as a cache
+                    console.log("Got info about access token from Appsecute");
+
+                    // Got information about token; add it to our in-memory store as a cache
                   // TODO: Handle revocation
                   db.accessTokens.save(
                       accessToken,
@@ -100,6 +106,8 @@ passport.use(new BearerStrategy(function(accessToken, done) {
                       });
                 },
                 function(error, res) {
+                    console.log("Failed to fetch info about access token from Appsecute");
+
                     done(error); // Unable to fetch information about token from Appsecute
                 }
             );
