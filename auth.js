@@ -80,7 +80,7 @@ passport.use(new BearerStrategy(function(accessToken, done) {
                 process.env.APPSECUTE_SECRET,
                 accessToken,
                 function(tokenInfo) {
-                    console.log("Got info about access token from Appsecute");
+                    console.log("Got info about access token from Appsecute: token was issued to '" + token.user.display_name);
 
                     // Got information about token; add it to our in-memory store as a cache
                   // TODO: Handle revocation
